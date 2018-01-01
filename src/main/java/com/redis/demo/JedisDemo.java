@@ -1,7 +1,7 @@
 package com.redis.demo;
 
 
-import java.util.Iterator;
+
 import java.util.List;
 
 import org.junit.Test;
@@ -9,7 +9,11 @@ import org.junit.Test;
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPool;
 import redis.clients.jedis.JedisPoolConfig;
+import redis.clients.jedis.Pipeline;
 import redis.clients.jedis.Transaction;
+
+import com.redis.demo.SerializeUtil;
+import com.redis.demo.User;
 
 /**
  * Jedis测试
@@ -30,10 +34,6 @@ public class JedisDemo {
 		
 		//输入密码，如果没有设置密码这行可以省略
 		jedis.auth("xiaoduanduan");
-		
-		jedis.set("name", "12121212");
-		
-		System.out.println(jedis.get("name"));
 		System.out.println(jedis.keys("*")); 
 		jedis.close();
 	}
@@ -151,28 +151,18 @@ public class JedisDemo {
 
 		System.out.println("链接成功");
 
-		try {
 
 			Transaction transaction = jedis.multi();
 			System.out.println("开启事务");
-			transaction.set("name1", "33333333333");
-
-			// 事务异常回滚测试
-//			double aa = 1 / 0;
-
-			transaction.set("name2", "44444444444");
+			transaction.set("a7", "33333333333");
+			
+			System.out.println(jedis.get("a7"));;
+			
+			transaction.set("a8", "33333333333");
 
 			List<Object> lll = transaction.exec();
 
-		} catch (Exception e) {
-			System.out.println(e.toString());
-		}finally{
-			System.out.println("finally");
-			System.out.println(jedis.get("name1"));
-			System.out.println(jedis.get("name2"));
-			System.out.println("结束");
 			jedis.close();
-		}
 	}
 	/**
 	 * redis事务测试
@@ -188,9 +178,48 @@ public class JedisDemo {
 		
 		System.out.println("链接成功");
 		
-		System.out.println(jedis.get("name1"));
-		System.out.println(jedis.get("name2"));
+		jedis.set("a5", "asdf");
+		
+		jedis.set("a6", "asdf");
+		
 		System.out.println("结束");
 		jedis.close();
+	}
+	/**
+	 * redis管道测试
+	 * 
+	 */
+	@Test
+	public void Jedi33 () throws Exception {
+		// 设置IP地址和端口
+		Jedis jedis = new Jedis("120.27.15.182", 6379);
+		// 输入密码，如果没有设置密码这行可以省略
+		jedis.auth("xiaoduanduan");
+		
+		System.out.println("链接成功");
+		
+		Pipeline pipeline = jedis.pipelined();
+		
+		pipeline.set("a7", "bb");
+		pipeline.set("a8", "bb");
+		pipeline.set("a9", "bb");
+		pipeline.set("a10", "bb");
+		
+		double a = 1/0;
+		
+		pipeline.set("a11", "bb");
+		
+		List<Object> results = pipeline.syncAndReturnAll();
+		
+		
+		
+		System.out.println("结束");
+		jedis.close();
+	}
+	
+	
+	
+	public static void main(String[] args) throws Exception {
+		new JedisDemo().Jedi33();
 	}
 }

@@ -1,5 +1,7 @@
 package com.demo.test;
 
+import java.util.Date;
+
 import org.junit.Test;
 
 public class test {
@@ -9,9 +11,14 @@ public class test {
 	 * @param args
 	 */
 	public static void main(String[] args) {
-		// TODO Auto-generated method stub
 
-		System.out.println("https://github.com/xiaoduanduan1021/MavenDemo2.git");
+		long s = new Date().getTime();
+				
+		for (int i = 0; i < 100000; i++) {
+			System.out.println(i);
+		}
+		long e = new Date().getTime();
+		System.out.println(e-s);
 	}
 
 	
@@ -20,4 +27,6 @@ public class test {
 		
 		System.out.println("junit测试");
 	}
+	
+	
 }
